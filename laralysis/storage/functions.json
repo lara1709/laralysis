@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Function",
+        "expr_str": "x**2 + 2*x + 1",
+        "var_name": "x"
+    },
+    {
+        "name": "Function",
+        "expr_str": "x**2 + 2*x + 1",
+        "var_name": "x"
+    }
+]
