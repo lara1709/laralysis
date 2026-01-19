@@ -1,6 +1,8 @@
 from storage.database import load_functions, save_function
 from core.function_model import FunctionModel
 from viz.plotter import plot_functions
+from storage.database import init_db
+init_db()
 
 def main():
     print("Welcome to laralysis")
