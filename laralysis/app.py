@@ -13,6 +13,7 @@ functions = load_functions()
 st.set_page_config(page_title="Laralysis", layout="wide")
 
 st.title("Laralysis - Math Visualizer")
+st.markdown("### Functions")
 
 col1, col2 = st.columns(2)
 
@@ -28,6 +29,17 @@ with col1:
                st.success(f"Function '{new_expr}' added!")
            except Exception as e:
                st.error(f"Error: {e}")
+
+   st.markdown("---")
+   st.subheader("Saved functions")
+
+   if functions:
+       for f in functions:
+           st.write("°", f.expr_str)
+
+   else:
+       st.info("No functions saved yet")
+   
 
 with col2:
     st.subheader("Plot a function")
@@ -52,45 +64,49 @@ with col2:
     else:
         st.info("No function saved")
 
-st.subheader("Numerical analysis")
+with st.expander("Numerical Analysis tools"):
+    if functions:
+        selected_func = st.selectbox(
+            "Select a function for analysis",
+            [f.expr_str for f in functions],
+            key="analysis"
+        )
+        f_analysis = next(f for f in functions if f.expr_str == selected_func)
 
-if functions:
-    selected_func = st.selectbox("Select function for analysis", [f.expr_str for f in functions], key="analysis")
-    f_analysis = next(f for f in functions if f.expr_str == selected_func)
+        st.markdown("**Find Root")
+        guess = st.number_input("Initial guess for root:", value=0.0, key="root_guess")
+        if st.button("Find root", key="root_button"):
+            try:
+                root = f_analysis.find_root(guess)
+                if root is not None:
+                    st.success(f"Approximate root: x = {root:.6f}")
+                else:
+                    st.error("Couldnt find root")
+            except Exception as e:
+                st.error(f"Error: {e}")
 
-    st.markdown("**Find Root**")
-    guess = st.number_input("Initial guess for root:", value=0.0, key="root_guess")
-    if st.button("Find Root", key="root_button"):
+        st.markdown("**Definite Integral**")
+        a = st.number_input("Lower bound a:", value=0.0, key="int_a")
+        b = st.number_input("Upper bound b :", value=1.0, key="int_b")
+        if st.button("Compute Integral", key="integral_button"):
+            try:
+                result = f_analysis.definite_integral(a, b)
+                st.success(f"Definite integral from {a} to {b}: {result:.6f}")
+            except Exception as e:
+                st.error(f"Error: {e}")
+    else:
+        st.info("No function saved yet")
+
+with st.expander("Sequences and Series"):
+    new_seq = st.text_input("Enter a sequence formula in n", key="seq_input")
+    start = st.number_input("Start index", value=0, key="seq_start")
+    end = st.number_input("End index", value=10, key="seq_end")
+
+    if st.button("Generate sequence"):
         try:
-            root = f_analysis.find_root(guess)
-            if root is not None:
-                st.success(f"Approximate root: x = {root:.6f}")
-            else:
-                st.error("Couldnt find root")
+            seq = SequenceModel(new_seq, start=start, end=end)
+            values = seq.generate()
+            st.success(f"Sequence: {values}")
+            st.line_chart(values)
         except Exception as e:
             st.error(f"Error: {e}")
-
-    st.markdown("**Definite Integral**")
-    a = st.number_input("Lower bound a:", value=0.0, key="int_a")
-    b = st.number_input("Upper bound b:", value=1.0, key="int_b")
-    if st.button("Compute Integral", key="integral_button"):
-        try:
-            result = f_analysis.definite_integral(a, b)
-            st.success(f"Definite integral  from {a} to {b}: {result:.6f}")
-        except Exception as e:
-            st.error(f"Error: {e}")
-
-st.subheader("Sequences and Series")
-
-new_seq = st.text_input("Enter a sequnece formula in n", key="seq_input")
-start= st.number_input("Start index", value=0, key="seq_start")
-end = st.number_input("End index", value=10, key="seq_end")
-
-if st.button("Generate sequence"):
-    try:
-        seq = SequenceModel(new_seq, start=start, end=end)
-        values = seq.generate()
-        st.success(f"Sequence: {values}")
-        st.line_chart(values)
-    except Exception as e:
-        st.error(f"Error: {e}")
