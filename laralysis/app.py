@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from core.function_model import FunctionModel
-from storage.database import init_db, save_function, load_functions
+from storage.database import init_db, save_function, load_functions, delete_function
 from core.sequence_model import SequenceModel
 
 init_db()
@@ -23,10 +23,15 @@ with col1:
    if st.button("Add function"):
        if new_expr.strip() != "":
            try:
-               f = FunctionModel(expr_str=new_expr)
-               functions.append(f)
-               save_function(f)
-               st.success(f"Function '{new_expr}' added!")
+               existing_exprs = [f.expr_str for f in functions]
+
+               if new_expr in existing_exprs:
+                   st.warning("This function was already saved")
+               else:
+                   f = FunctionModel(expr_str=new_expr)
+                   functions.append(f)
+                   save_function(f)
+                   st.success(f"Function '{new_expr}' added!")
            except Exception as e:
                st.error(f"Error: {e}")
 
@@ -34,6 +39,21 @@ with col1:
    st.subheader("Saved functions")
 
    if functions:
+       func_to_delete = st.selectbox(
+           "Select a function to delete",
+           [f.expr_str for f in functions],
+           key="delete_select"
+       )
+
+       if st.button("Deelete selected function"):
+           try:
+               delete_function(func_to_delete)
+               st.success(f"Deleted function: {func_to_delete}")
+               st.rerun()
+           except Exception as e:
+               st.error(f"Error deleting the function: {e}")
+
+       st.markdown("**All saved functions:**")
        for f in functions:
            st.write("°", f.expr_str)
 

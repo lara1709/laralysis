@@ -55,3 +55,15 @@ def load_functions():
         functions.append(f)
 
     return functions
+
+def delete_function(expr_str):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "DELETE FROM functions WHERE expr_str = ?",
+        (expr_str,)
+    )
+
+    connection.commit()
+    connection.close()
