@@ -5,6 +5,6 @@ def save_to_json(obj, filename):
         json.dump(obj.serialize(), f, indent=4)
 
 def load_from_json(filename):
-    with open(filenmae, "r") as f:
+    with open(filename, "r") as f:
         data = json.load(f)
     return data

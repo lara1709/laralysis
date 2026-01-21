@@ -8,73 +8,77 @@ from storage.database import init_db, save_function, load_functions
 from core.sequence_model import SequenceModel
 
 init_db()
-
 functions = load_functions()
+
+st.set_page_config(page_title="Laralysis", layout="wide")
 
 st.title("Laralysis - Math Visualizer")
 
-st.subheader("Add a new function")
-new_expr = st.text_input("Enter function in x")
-if st.button("Add function"):
-    if new_expr.strip() != "":
-        try:
-            f = FunctionModel(expr_str=new_expr)
-            functions.append(f)
-            save_function(f)
-            st.success(f"Function '{new_expr}' added!")
-        except Exception as e:
-            st.error(f"Error: {e}")
+col1, col2 = st.columns(2)
 
-st.subheader("Saved functions")
-if functions:
-    df = pd.DataFrame([{"Expression": f.expr_str} for f in functions])
-    st.table(df)
-else:
-    st.info("No function saved yet")
+with col1:
+   st.subheader("Add a new function")
+   new_expr = st.text_input("Enter function in x", key="new_func")
+   if st.button("Add function"):
+       if new_expr.strip() != "":
+           try:
+               f = FunctionModel(expr_str=new_expr)
+               functions.append(f)
+               save_function(f)
+               st.success(f"Function '{new_expr}' added!")
+           except Exception as e:
+               st.error(f"Error: {e}")
 
-st.subheader("Plot a function")
-if functions:
-    selected_expr = st.selectbox("Select function to plot", [f.expr_str for f in functions])
-    f_to_plot = next(f for f in functions if f.expr_str == selected_expr)
+with col2:
+    st.subheader("Plot a function")
+    if functions:
+        selected_expr = st.selectbox("Select function to plot", [f.expr_str for f in functions], key="plot_func")
+        f_to_plot = next(f for f in functions if f.expr_str == selected_expr)
 
-    x_vals = np.linspace(-10, 10, 400)
-    y_vals = [f_to_plot.evaluate(x) for x in x_vals]
+        x_vals = np.linspace(-10, 10, 400)
+        y_vals = [f_to_plot.evaluate(x) for x in x_vals]
 
-    plt.figure(figsize=(6,4))
-    plt.plot(x_vals, y_vals, label=f"{selected_expr}")
+        plt.figure(figsize=(6,4))
+        plt.plot(x_vals, y_vals, color="#FFB6C1", label=f"{selected_expr}")
 
-    y_deriv = [float(f_to_plot.derivative().subs(f_to_plot.var, x)) for x in x_vals]
-    plt.plot(x_vals, y_deriv, label=f"Derivative of {selected_expr}", linestyle="--")
+        y_deriv = [float(f_to_plot.derivative().subs(f_to_plot.var, x)) for x in x_vals]
+        plt.plot(x_vals, y_deriv, color="#FF69B4", linestyle="--", label=f"Derivative")
 
-    plt.legend()
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.grid(True)
-    st.pyplot(plt)
-else:
-    st.info("No function to plot")
+        plt.legend()
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.grid(True)
+        st.pyplot(plt)
+    else:
+        st.info("No function saved")
 
-st.subheader("Numerical analysis tools")
+st.subheader("Numerical analysis")
 
 if functions:
     selected_func = st.selectbox("Select function for analysis", [f.expr_str for f in functions], key="analysis")
     f_analysis = next(f for f in functions if f.expr_str == selected_func)
 
     st.markdown("**Find Root**")
-    guess = st.number_input("Initial guess for root:", value=0.0, key="guess")
-    if st.button("Find Root"):
-        root = f_analysis.find_root(guess)
-        if root is not None:
-            st.sucess(f"Approximate root: x = {root:.6f}")
-        else:
-            st.error("Couldnt find root")
+    guess = st.number_input("Initial guess for root:", value=0.0, key="root_guess")
+    if st.button("Find Root", key="root_button"):
+        try:
+            root = f_analysis.find_root(guess)
+            if root is not None:
+                st.success(f"Approximate root: x = {root:.6f}")
+            else:
+                st.error("Couldnt find root")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
     st.markdown("**Definite Integral**")
-    a = st.number_input("Lower bound a:", value=0.0, key="a")
-    b = st.number_input("Upper bound b:", value=1.0, key="b")
-    if st.button("Compute Integral"):
-        result = f_analysis.definite_integral(a, b)
-        st.success(f"Definite integral  from {a} to {b}: {result:.6f}")
+    a = st.number_input("Lower bound a:", value=0.0, key="int_a")
+    b = st.number_input("Upper bound b:", value=1.0, key="int_b")
+    if st.button("Compute Integral", key="integral_button"):
+        try:
+            result = f_analysis.definite_integral(a, b)
+            st.success(f"Definite integral  from {a} to {b}: {result:.6f}")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
 st.subheader("Sequences and Series")
 
