@@ -38,4 +38,4 @@ This is done using numerical method.
 - Clone the repository on Github
 - Install the python packages needed (see "What was used") (in the terminal type: pip install streamlit numpy matplotlib sympy)
 - run streamlit (in the terminal type: streamlit run app.py)
-- Now you can add, delete, view and plot your functions!
+- Now you can add, delete, view and plot your functions!!
