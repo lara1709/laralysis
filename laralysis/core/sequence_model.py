@@ -1,6 +1,4 @@
-from .base_model import BaseModel
-
-class SequenceModel(BaseModel):
+class SequenceModel:
     def __init__(self, formula_str, var_name="n", start=0, end=10):
         super().__init__(name="Sequence")
         self.formula_str = formula_str
@@ -22,5 +20,3 @@ class SequenceModel(BaseModel):
             "end": self.end
             })
         return base
-    def __repr__(self):
-        return f"<SequenceModel {self.formula_str} from {self.start} to {self.end}>"

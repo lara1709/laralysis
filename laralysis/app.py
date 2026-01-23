@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -93,7 +92,7 @@ with st.expander("Numerical Analysis tools"):
         )
         f_analysis = next(f for f in functions if f.expr_str == selected_func)
 
-        st.markdown("**Find Root")
+        st.markdown("**Find Root**")
         guess = st.number_input("Initial guess for root:", value=0.0, key="root_guess")
         if st.button("Find root", key="root_button"):
             try:

@@ -1,7 +1,6 @@
 from sympy import symbols, sympify
-from .base_model import BaseModel
 
-class FunctionModel(BaseModel):
+class FunctionModel:
     def __init__(self, expr_str, var_name="x"):
         super().__init__(name="Function")
         self.var_name = var_name
@@ -44,6 +43,3 @@ class FunctionModel(BaseModel):
             "var_name": self.var_name
         })
         return base
-    
-    def __repr__(self):
-        return f"<FunctionModel {self.expr_str}>"

@@ -12,7 +12,7 @@ def save_functions_to_json(functions):
         data.append(f.serialize())
 
     with open(JSON_PATH, "w", encoding="utf-8") as file:
-        json.dump(data, file, indent=4)
+        json.dump(data, file)
 
 def load_functions_from_json():
     if not JSON_PATH.exists():
