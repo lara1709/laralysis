@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+from core.function_model import FunctionModel
 
 DB_PATH = Path(__file__).parent / "laralysis.db"
 
@@ -10,7 +11,6 @@ def init_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS functions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
         expr_str TEXT,
         var_name TEXT
     )
@@ -25,11 +25,10 @@ def save_function(function_model):
 
     cursor.execute(
         """
-        INSERT INTO functions (name, expr_str, var_name)
-        VALUES (?, ?, ?)
+        INSERT INTO functions (expr_str, var_name)
+        VALUES (?, ?)
         """,
         (
-            function_model.name,
             function_model.expr_str,
             function_model.var_name,
         )
@@ -38,19 +37,17 @@ def save_function(function_model):
     connection.commit()
     connection.close()
 
-from core.function_model import FunctionModel
-
 def load_functions():
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT name, expr_str, var_name FROM functions")
+    cursor.execute("SELECT expr_str, var_name FROM functions")
     rows = cursor.fetchall()
 
     connection.close()
 
     functions = []
-    for name, expr_str, var_name in rows:
+    for expr_str, var_name in rows:
         f = FunctionModel(expr_str=expr_str, var_name=var_name)
         functions.append(f)
 

@@ -1,6 +1,5 @@
 class SequenceModel:
     def __init__(self, formula_str, var_name="n", start=0, end=10):
-        super().__init__(name="Sequence")
         self.formula_str = formula_str
         self.var_name = var_name
         self.start = start

@@ -1,8 +1,7 @@
-from sympy import symbols, sympify
+from sympy import symbols, sympify, integrate
 
 class FunctionModel:
     def __init__(self, expr_str, var_name="x"):
-        super().__init__(name="Function")
         self.var_name = var_name
         self.expr_str = expr_str
         self.var = symbols(var_name)
@@ -30,16 +29,15 @@ class FunctionModel:
             x_new = x_val - fx/fpx
             if abs(x_new - x_val) < tol:
                 return x_new
-            return None
+            x_val = x_new
+
+        return None
         
     def definite_integral(self, a, b):
-        from sympy import integrate
         return float(integrate(self.expr, (self.var, a, b)))
     
     def serialize(self):
-        base = super().serialize()
-        base.update({
+        return {
             "expr_str": self.expr_str,
             "var_name": self.var_name
-        })
-        return base
+        }
